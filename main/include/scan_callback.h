@@ -27,7 +27,7 @@ public:
     auto name      = advertisedDevice->getName();
 
     if (!name.empty()) {
-      ESP_LOGI(TAG, "name=%s; addr=%s", name.c_str(), advertisedDevice->getAddress().toString().c_str());
+      ESP_LOGI(TAG, "name=%s; addr=%s; rssi=%d", name.c_str(), advertisedDevice->getAddress().toString().c_str(), advertisedDevice->getRSSI());
     }
     struct ConnectTaskParam {
       TaskHandle_t task_handle;
@@ -76,7 +76,7 @@ public:
             ESP_LOGW(TAG, "No services found");
           }
           for (auto *pService : services) {
-            auto pChars = pService->getCharacteristics();
+            auto pChars = pService->getCharacteristics(true);
             if (!pChars) {
               ESP_LOGE(TAG, "Failed to get characteristics");
               return;
@@ -87,9 +87,14 @@ public:
             }
             for (auto *pChar : chars) {
               const auto TAG = "SCAN_RESULT";
-              ESP_LOGI(TAG, "service=%s, char=%s",
+              ESP_LOGI(TAG, "service=%s, char=%s [%s%s%s%s%s]",
                        pService->getUUID().toString().c_str(),
-                       pChar->getUUID().toString().c_str());
+                       pChar->getUUID().toString().c_str(),
+                       pChar->canNotify() ? "n" : "",
+                       pChar->canRead() ? "r" : "",
+                       pChar->canWrite() ? "w" : "",
+                       pChar->canWriteNoResponse() ? "W" : "",
+                       pChar->canIndicate() ? "i" : "");
             }
           }
         }

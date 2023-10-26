@@ -27,9 +27,9 @@ extern "C" [[noreturn]] void app_main();
   scan.setInterval(1349);
   scan.setWindow(449);
   scan.setActiveScan(true);
-  constexpr auto scanTime = std::chrono::milliseconds(750);
+  constexpr auto scanTime = std::chrono::milliseconds(2500);
   // total time = scan time + sleep time
-  constexpr auto scanTotalTime = std::chrono::milliseconds(1000);
+  constexpr auto scanTotalTime = std::chrono::milliseconds(5000);
   static_assert(scanTotalTime > scanTime);
   ESP_LOGI(TAG, "Initiated");
   for (;;) {

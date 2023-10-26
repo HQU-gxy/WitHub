@@ -12,9 +12,50 @@
 
 namespace blue {
 const auto TARGET         = "WT901BLE67";
-const int MAX_DEVICE_NUM  = 8;
+const int MAX_DEVICE_NUM  = 12;
 const int MAX_SERVICE_NUM = 4;
 const int MAX_CHAR_NUM    = 4;
+
+// who define these UUIDs? so stupid
+const char *SERVICE_UUID = "0000ffe5-0000-1000-8000-00805f9a34fb";
+const char *READ_CHAR    = "0000ffe4-0000-1000-8000-00805f9a34fb";
+const char *WRITE_CHAR   = "0000ffe9-0000-1000-8000-00805f9a34fb";
+
+void print_services_chars(NimBLEClient &client) {
+  const auto TAG = "client";
+  auto pServices = client.getServices(true);
+  if (!pServices) {
+    ESP_LOGE(TAG, "Failed to get services");
+    return;
+  }
+  auto &services = *pServices;
+  if (services.empty()) {
+    ESP_LOGW(TAG, "No services found");
+  }
+  for (auto *pService : services) {
+    auto pChars = pService->getCharacteristics(true);
+    if (!pChars) {
+      ESP_LOGE(TAG, "Failed to get characteristics");
+      return;
+    }
+    auto &chars = *pChars;
+    if (chars.empty()) {
+      ESP_LOGW(TAG, "No characteristics found for service %s", pService->getUUID().toString().c_str());
+    }
+    for (auto *pChar : chars) {
+      const auto TAG = "SCAN_RESULT";
+      ESP_LOGI(TAG, "service=%s, char=%s [%s%s%s%s%s]",
+               pService->getUUID().toString().c_str(),
+               pChar->getUUID().toString().c_str(),
+               pChar->canNotify() ? "n" : "",
+               pChar->canRead() ? "r" : "",
+               pChar->canWrite() ? "w" : "",
+               pChar->canWriteNoResponse() ? "W" : "",
+               pChar->canIndicate() ? "i" : "");
+    }
+  }
+}
+
 class ScanCallback : public NimBLEScanCallbacks {
   static const int ADDR_SIZE = 6;
   using addr_t               = etl::array<uint8_t, ADDR_SIZE>;
@@ -66,36 +107,22 @@ public:
             ESP_LOGE(TAG, "Failed to connect to the device");
             return;
           }
-          auto pServices = client.getServices(true);
-          if (!pServices) {
-            ESP_LOGE(TAG, "Failed to get services");
+          print_services_chars(client);
+          auto pService = client.getService(NimBLEUUID{SERVICE_UUID});
+          if (!pService) {
+            ESP_LOGE(TAG, "failed to get service");
             return;
           }
-          auto &services = *pServices;
-          if (services.empty()) {
-            ESP_LOGW(TAG, "No services found");
+          auto pReadChar = pService->getCharacteristic(NimBLEUUID{READ_CHAR});
+          if (!pReadChar) {
+            ESP_LOGE(TAG, "failed to get read char");
+            return;
           }
-          for (auto *pService : services) {
-            auto pChars = pService->getCharacteristics(true);
-            if (!pChars) {
-              ESP_LOGE(TAG, "Failed to get characteristics");
-              return;
-            }
-            auto &chars = *pChars;
-            if (chars.empty()) {
-              ESP_LOGW(TAG, "No characteristics found for service %s", pService->getUUID().toString().c_str());
-            }
-            for (auto *pChar : chars) {
-              const auto TAG = "SCAN_RESULT";
-              ESP_LOGI(TAG, "service=%s, char=%s [%s%s%s%s%s]",
-                       pService->getUUID().toString().c_str(),
-                       pChar->getUUID().toString().c_str(),
-                       pChar->canNotify() ? "n" : "",
-                       pChar->canRead() ? "r" : "",
-                       pChar->canWrite() ? "w" : "",
-                       pChar->canWriteNoResponse() ? "W" : "",
-                       pChar->canIndicate() ? "i" : "");
-            }
+          auto pWriteChar =
+              pService->getCharacteristic(NimBLEUUID{WRITE_CHAR});
+          if (!pWriteChar) {
+            ESP_LOGE(TAG, "failed to get write char");
+            return;
           }
         }
       };

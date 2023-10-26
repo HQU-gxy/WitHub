@@ -72,6 +72,9 @@ public:
             return;
           }
           auto &services = *pServices;
+          if (services.empty()) {
+            ESP_LOGW(TAG, "No services found");
+          }
           for (auto *pService : services) {
             auto pChars = pService->getCharacteristics();
             if (!pChars) {
@@ -79,6 +82,9 @@ public:
               return;
             }
             auto &chars = *pChars;
+            if (chars.empty()) {
+              ESP_LOGW(TAG, "No characteristics found for service %s", pService->getUUID().toString().c_str());
+            }
             for (auto *pChar : chars) {
               const auto TAG = "SCAN_RESULT";
               ESP_LOGI(TAG, "service=%s, char=%s",

@@ -1,6 +1,6 @@
 [submodule "components/etl/etl"]
-	fath = components/etl/etl
 	url = https://github.com/ETLCPP/etl
+	path = components/etl/etl
 [submodule "components/esp-nimble-cpp"]
 	path = components/esp-nimble-cpp
 	url = https://github.com/h2zero/esp-nimble-cpp

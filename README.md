@@ -15,16 +15,7 @@ source export.sh
 
 I could make full use of the flash... See also [Partition Tables](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/partition-tables.html).
 
-```txt
-$ python -m esptool -p /dev/cu.wchusbserial1130 flash_id
-Chip is ESP32-D0WD-V3 (revision v3.0)
-Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
-Crystal is 40MHz
-MAC: 30:c6:f7:eb:69:44
-Uploading stub...
-Running stub...
-Stub running...
-Manufacturer: 20
-Device: 4016
-Detected flash size: 4MB
-```
+## Wit
+
+- [WITMOTION/WitBluetooth_BWT901BLE5_0](https://github.com/WITMOTION/WitBluetooth_BWT901BLE5_0)
+- [蓝牙5.0通讯协议](https://wit-motion.yuque.com/wumwnr/docs/gpare3)

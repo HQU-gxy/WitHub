@@ -141,7 +141,7 @@ public:
 
           auto on_notify = [&self, &device](NimBLERemoteCharacteristic *pChar, uint8_t *pData, size_t length, bool isNotify) {
             const auto TAG = "on_notify";
-            ESP_LOGI(TAG, "%s", utils::toHex(pData, length).c_str());
+            ESP_LOGD(TAG, "%s", utils::toHex(pData, length).c_str());
             if (self.on_data != nullptr) {
               self.on_data(device, pData, length);
             }

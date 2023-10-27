@@ -39,11 +39,12 @@ extern "C" [[noreturn]] void app_main();
 [[noreturn]] void app_main() {
   const auto TAG = "main";
   auto ap        = wlan::AP{WLAN_SSID, WLAN_PASSWORD};
-  ESP_LOGI(TAG, "ssid=%s; password=%s", ap.ssid.c_str(), ap.password.c_str());
+  ESP_LOGI(TAG, "ssid=%s; password=%s;", ap.ssid.c_str(), ap.password.c_str());
   auto manager = wlan::WlanManager();
-  manager.wifi_init();
-  manager.mqtt_init();
-  manager.start_connect_task();
+  manager.set_ap(std::move(ap));
+  ESP_ERROR_CHECK(manager.wifi_init());
+  ESP_ERROR_CHECK(manager.start_connect_task());
+  ESP_ERROR_CHECK(manager.mqtt_init());
 
   /******** Bluetooth LE init ********/
   NimBLEDevice::init(BLE_NAME);
@@ -57,14 +58,16 @@ extern "C" [[noreturn]] void app_main();
   /******** Task and callbacks ********/
   scan_cb.on_data = [&manager](const blue::WitDevice &device, uint8_t *data, size_t length) {
     const auto TAG = "on_data";
-    auto pub_msg = wlan::MqttPubMsg{
-        .topic = "/wit/" + utils::toHex(device.addr.data(), device.addr.size()) + "/data",
-        .data  = std::vector<uint8_t>{data, data + length},
+    auto pub_msg   = wlan::MqttPubMsg{
+          .topic = "/wit/" + utils::toHex(device.addr.data(), device.addr.size()) + "/data",
+          .data  = std::vector<uint8_t>{data, data + length},
     };
-    auto ok        = manager.publish(pub_msg);
-    if (!ok) {
-      ESP_LOGW(TAG, "failed to send data to sub_msg_chan");
-    }
+    ESP_LOGI(TAG, "%s (%d) to %s",
+             utils::toHex(pub_msg.data.data(), pub_msg.data.size()).c_str(),
+             pub_msg.data.size(),
+             pub_msg.topic.c_str());
+    // don't care about the result
+    auto _ = manager.publish(pub_msg);
   };
 
   struct PollChanParam {

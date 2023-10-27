@@ -277,7 +277,7 @@ void WlanManager::connect_task(void *pvParameters) {
         ESP_LOGE(TAG, "failed to connect to ap, reason %s (%d)", esp_err_to_name(err), err);
       }
     } else {
-      // ESP_LOGW(TAG, "no ap to connect");
+       ESP_LOGW(TAG, "no ap to connect");
     }
     vTaskDelay(pdMS_TO_TICKS(1000));
   }

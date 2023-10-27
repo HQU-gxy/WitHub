@@ -10,31 +10,8 @@
 #include <esp_wifi.h>
 #include <etl/optional.h>
 #include <nvs_flash.h>
+#include "wifi_entity.h"
 #include <msd/channel.hpp>
-
-
-namespace wlan {
-const auto BROKER_URL = "mqtt://weihua-iot.cn:1883";
-struct MqttPubMsg {
-  std::string topic;
-  std::vector<uint8_t> data;
-  int qos = 0;
-  // retain flag
-  int retain = 0;
-};
-
-struct MqttSubMsg {
-  std::string topic;
-  std::vector<uint8_t> data;
-};
-
-struct AP {
-  std::string ssid;
-  std::string password;
-};
-
-using sub_msg_chan_t = msd::channel<MqttSubMsg>;
-}
 
 namespace wlan {
 // https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFi/src/WiFi.h
@@ -61,7 +38,7 @@ class WlanManager {
    */
   esp_mqtt_client_handle_t mqtt_handle = nullptr;
   etl::optional<AP> _ap                = etl::nullopt;
-  std::vector<std::string> subscribed_topics{"/gyro/+/control/#"};
+  std::vector<std::string> subscribed_topics{"/wit/+/control/#"};
   sub_msg_chan_t _sub_msg_chan{8};
   TaskHandle_t _connect_task_handle = nullptr;
 

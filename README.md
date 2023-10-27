@@ -1,3 +1,9 @@
+# WitHub
+
+A simple Bluetooth LE to MQTT adapter for WitMotion 9-axis IMU. Only send the raw data and don't parse the data.
+
+## Build
+
 Need certain IDF version ([v5.1.1](https://github.com/espressif/esp-idf/tree/v5.1.1)) to build the project.
 
 In your IDF directory.
@@ -12,8 +18,6 @@ git submodule update --init --recursive
 ./install.sh
 source export.sh
 ```
-
-I could make full use of the flash... See also [Partition Tables](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/partition-tables.html).
 
 ## Wit
 

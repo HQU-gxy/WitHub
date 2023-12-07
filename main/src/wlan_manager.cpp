@@ -115,7 +115,7 @@ esp_err_t WlanManager::wifi_init() { // NOLINT(*-make-member-function-const)
   auto TAG = "WlanManager::init";
   // Initialize NVS
   if (!_has_nvs_init) {
-    ESP_RETURN_ON_ERROR(nvs_flash_init(), TAG, "Failed to init NVS");
+    ESP_RETURN_ON_ERROR(nvs_init(), TAG, "Failed to init NVS");
   }
   // https://github.com/espressif/esp-idf/blob/master/examples/wifi/scan/main/scan.c
   ESP_RETURN_ON_ERROR(esp_netif_init(), TAG, "Failed to init netif");
